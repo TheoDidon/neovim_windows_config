@@ -23,7 +23,7 @@ require("lazy").setup({
         'lervag/vimtex',
         ft = 'tex',
 
-    }
+    },
     {
         'navarasu/onedark.nvim',
         config = function()
