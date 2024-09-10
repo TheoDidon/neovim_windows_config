@@ -119,9 +119,7 @@ vim.opt.backspace = { 'indent', 'eol', 'start' }
 
 -- VimTex settings
 vim.g.tex_flavor = 'latex'
-vim.g.vimtex_view_method = 'sumatrapdf'
-vim.g.vimtex_view_sumatrapdf_exe = 'C:\\Users\\theod\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\SumatraPDF.lnk'
-vim.g.vimtex_view_sumatrapdf_options = '-reuse-instance'
-vim.g.vimtex_compiler_method = 'latexmk'
+vim.g.vimtex_view_method = 'general'
+vim.g.vimtex_view_general_viewer = 'C:\\Users\\theod\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64\\texworks.exe'
 vim.g.vimtex_quickfix_mode = 0
 
