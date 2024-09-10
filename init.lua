@@ -1,22 +1,40 @@
--- Plugins using vim-plug (you need vim-plug installed first)
-vim.cmd([[
-  call plug#begin('~/AppData/Local/nvim/plugged')
+-- Charger lazy.nvim
+local lazypath = vim.fn.stdpath("data") .. "\\lazy\\lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable", -- Dernière version stable
+    lazypath,
+  })
+end
 
-  Plug 'tpope/vim-sensible'
-  Plug 'tpope/vim-surround'
-  Plug 'vim-airline/vim-airline'
-  Plug 'rafi/awesome-vim-colorschemes'
-  Plug 'lervag/vimtex'
-  Plug 'navarasu/onedark.nvim'
+vim.opt.rtp:prepend(lazypath)
 
-  call plug#end()
-]])
+-- Configurer lazy.nvim
+require("lazy").setup({
+    'tpope/vim-sensible',
+    'tpope/vim-surround',
+    'vim-airline/vim-airline',
+    'rafi/awesome-vim-colorschemes',
+    {
+        'lervag/vimtex',
+        ft = 'tex',
 
--- Load the OneDark theme
-require('onedark').setup {
-  style = 'dark' -- Options: 'dark', 'darker', 'cool', 'warm', 'warmer', 'light'
-}
-require('onedark').load()
+    }
+    {
+        'navarasu/onedark.nvim',
+        config = function()
+            require('onedark').setup {
+                style = 'warmer' -- Options: 'dark', 'darker', 'cool', 'warm', 'warmer', 'light'
+            }
+            require('onedark').load()
+        end,
+    },
+})
+
 
 -- Classic sets
 vim.opt.number = true
@@ -71,47 +89,55 @@ vim.cmd([[iabbrev @@ theo.didon@gmail.com]])
 
 -- Autocommands
 vim.cmd([[
-  autocmd BufWritePre,BufRead *.html,*.css,*.js,*.c,*.cpp,*.py normal gg=G
-  autocmd Filetype c,cpp,javascript,css nnoremap <leader>c I//<esc>
-  autocmd Filetype c,cpp,javascript,css nnoremap <leader>uc I<esc>lxx<esc>
-  autocmd Filetype python nnoremap <leader>c I#<esc>
-  autocmd Filetype python nnoremap <leader>uc I<esc>lx<esc>
+autocmd BufWritePre,BufRead *.html,*.css,*.js,*.c,*.cpp,*.py normal gg=G
+autocmd Filetype c,cpp,javascript,css nnoremap <leader>c I//<esc>
+autocmd Filetype c,cpp,javascript,css nnoremap <leader>uc I<esc>lxx<esc>
+autocmd Filetype python nnoremap <leader>c I#<esc>
+autocmd Filetype python nnoremap <leader>uc I<esc>lx<esc>
 ]])
 
 -- C/C++ autocmds
 vim.cmd([[
-  autocmd Filetype c,cpp nnoremap <leader>inc i#include ""<esc>i
-  autocmd Filetype c,cpp nnoremap <leader>INC i#include <><esc>i
-  autocmd Filetype c,cpp iabbrev iost #include <iostream>
-  autocmd Filetype c,cpp iabbrev ivec #include <vector>
-  autocmd Filetype c,cpp iabbrev ndef #ifndef
-  autocmd Filetype c,cpp iabbrev def #define
-  autocmd Filetype c,cpp nnoremap printf iprintf("\n");<esc>hhhhi
-  autocmd Filetype cpp iabbrev cout std::cout <<
-  autocmd Filetype cpp iabbrev cin std::cin >>
-  autocmd Filetype cpp iabbrev cerr std::cerr
-  autocmd Filetype cpp iabbrev endl << std::endl;
-  autocmd Filetype cpp iabbrev str std::string
-  autocmd Filetype cpp iabbrev vector std::vector<
-  autocmd Filetype cpp iabbrev fstr std::fstream
-  autocmd Filetype cpp iabbrev imath #include <cmath>
-  autocmd Filetype c iabbrev iost #include <stdio.h>
-  autocmd Filetype c iabbrev std #include <stdlib.h>
-  autocmd Filetype c iabbrev imath #include <math.h>
-  autocmd Filetype c iabbrev istr #include <string.h>
-  autocmd Filetype c inoremap wmain int main(int argc, char* argv[]){<cr><cr><cr>return 0;<cr>}
+autocmd Filetype c,cpp nnoremap <leader>inc i#include ""<esc>i
+autocmd Filetype c,cpp nnoremap <leader>INC i#include <><esc>i
+autocmd Filetype c,cpp iabbrev iost #include <iostream>
+autocmd Filetype c,cpp iabbrev ivec #include <vector>
+autocmd Filetype c,cpp iabbrev ndef #ifndef
+autocmd Filetype c,cpp iabbrev def #define
+autocmd Filetype c,cpp nnoremap printf iprintf("\n");<esc>hhhhi
+autocmd Filetype cpp iabbrev cout std::cout <<
+autocmd Filetype cpp iabbrev cin std::cin >>
+autocmd Filetype cpp iabbrev cerr std::cerr
+autocmd Filetype cpp iabbrev endl << std::endl;
+autocmd Filetype cpp iabbrev str std::string
+autocmd Filetype cpp iabbrev vector std::vector<
+autocmd Filetype cpp iabbrev fstr std::fstream
+autocmd Filetype cpp iabbrev imath #include <cmath>
+autocmd Filetype c iabbrev iost #include <stdio.h>
+autocmd Filetype c iabbrev std #include <stdlib.h>
+autocmd Filetype c iabbrev imath #include <math.h>
+autocmd Filetype c iabbrev istr #include <string.h>
+autocmd Filetype c inoremap wmain int main(int argc, char* argv[]){<cr><cr><cr>return 0;<cr>}
 ]])
 
 -- Python autocmds
 vim.cmd([[
-  autocmd Filetype python iabbrev npy import numpy as np
-  autocmd Filetype python iabbrev pandas import pandas as pd
-  autocmd Filetype python iabbrev seab import seaborn as sb
+autocmd Filetype python iabbrev npy import numpy as np
+autocmd Filetype python iabbrev pandas import pandas as pd
+autocmd Filetype python iabbrev seab import seaborn as sb
 ]])
 
 -- Javascript autocmd
 vim.cmd([[
-  autocmd Filetype javascript iabbrev log console.log(
+autocmd Filetype javascript iabbrev log console.log(
+]])
+
+-- Html autocmd
+vim.cmd([[
+autocmd Filetype html inoremap div <div class=""><cr><cr></div><esc>kA<tab>
+autocmd Filetype html inoremap html <html><cr><cr></html><esc>kA<tab>
+autocmd Filetype html inoremap body <body><cr><cr></body><esc>kA<tab>
+autocmd Filetype html inoremap wheader <!DOCTYPE html><cr><html><cr><head><cr><meta charset="UTF-8"><cr><meta name="viewport" content="width=device-width, initial-scale=1.0"><cr><title>Document</title><cr></head><cr><body><cr><cr></body><cr></html>
 ]])
 
 -- Set backspace to work normally
