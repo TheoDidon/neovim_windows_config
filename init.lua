@@ -55,7 +55,78 @@ require("lazy").setup({
             "ibhagwan/fzf-lua",              -- optional
         },
         config = true
-    }
+    },
+    {
+        'hrsh7th/nvim-cmp',
+        dependencies = {
+            'hrsh7th/cmp-nvim-lsp', -- Pour l'intégration avec LSP
+            'hrsh7th/cmp-buffer', -- Complétion à partir des buffers ouverts
+            'hrsh7th/cmp-path', -- Complétion des chemins de fichiers
+            'hrsh7th/cmp-cmdline', -- Complétion de la ligne de commande
+            'saadparwaiz1/cmp_luasnip', -- Intégration avec LuaSnip
+            'L3MON4D3/LuaSnip', -- Snippets
+            'rafamadriz/friendly-snippets' -- Snippets préconfigurés
+        },
+        config = function()
+            local cmp = require('cmp')
+            cmp.setup({
+                snippet = {
+                    expand = function(args)
+                        require('luasnip').lsp_expand(args.body)
+                    end,
+                },
+                mapping = {
+                    ['<Tab>'] = cmp.mapping.select_next_item(),
+                    ['<S-Tab>'] = cmp.mapping.select_prev_item(),
+                    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+                    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+                    ['<C-Space>'] = cmp.mapping.complete(),
+                    ['<C-e>'] = cmp.mapping.close(),
+                    ['<CR>'] = cmp.mapping.confirm({ select = true }),
+                },
+                sources = cmp.config.sources({
+                    { name = 'nvim_lsp' },
+                    { name = 'luasnip' },
+                }, {
+                    { name = 'buffer' },
+                    { name = 'path' },
+                })
+            })
+
+            -- Configuration pour la ligne de commande
+            cmp.setup.cmdline('/', {
+                mapping = cmp.mapping.preset.cmdline(),
+                sources = {
+                    { name = 'buffer' }
+                }
+            })
+
+            cmp.setup.cmdline(':', {
+                mapping = cmp.mapping.preset.cmdline(),
+                sources = cmp.config.sources({
+                    { name = 'path' }
+                }, {
+                    { name = 'cmdline' }
+                })
+            })
+        end
+    },
+    {
+        'neovim/nvim-lspconfig',
+        config = function()
+            -- Configuration pour C/C++
+            require'lspconfig'.clangd.setup{}
+
+            -- Configuration pour CSS
+            require'lspconfig'.cssls.setup{}
+
+            -- Configuration pour HTML
+            require'lspconfig'.html.setup{}
+
+            -- Configuration pour JavaScript/TypeScript
+            require'lspconfig'.ts_ls.setup{}
+        end,
+    },
 })
 
 
@@ -96,10 +167,10 @@ vim.api.nvim_set_keymap('n', '<leader>{', 'viw<esc>a}<esc>bi{<esc>lel', { norema
 vim.api.nvim_set_keymap('n', '<leader>v', '<c-v>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>;', 'A;<esc>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<cr>', 'o<esc>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>gg', ':Neogit<cr>', { noremap = true, silent = true })
 
 vim.api.nvim_set_keymap('i', 'kj', '<esc>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('i', '<c-u>', '<Esc>viwUea', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>g', ':Neogit<cr>', { noremap = true, silent = true })
 
 -- Operator-pending mappings
 vim.api.nvim_set_keymap('o', 'in(', ':<c-u>normal! f(vi(<cr>', { noremap = true, silent = true })
