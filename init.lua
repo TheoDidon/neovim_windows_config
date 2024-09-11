@@ -33,6 +33,17 @@ require("lazy").setup({
             require('onedark').load()
         end,
     },
+    {
+        'wolandark/vim-live-server',
+        ft = 'html',
+        cmd = { "LiveServerStart", "LiveServerStop" },
+        build = "npm install -g live-server",
+    },
+    {
+    'nvim-telescope/telescope.nvim', 
+    tag = '0.1.8',
+    dependencies = { 'nvim-lua/plenary.nvim' }
+    },
 })
 
 
@@ -81,6 +92,7 @@ vim.api.nvim_set_keymap('i', '<esc>', '<Nop>', { noremap = true, silent = true }
 vim.api.nvim_set_keymap('o', 'in(', ':<c-u>normal! f(vi(<cr>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('o', 'in[', ':<c-u>normal! f[vi[<cr>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('o', 'in{', ':<c-u>normal! f{vi{<cr>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('o', 'in>', ':<c-u>normal! f>lvf<h<cr>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('o', 'in"', ':<c-u>normal! f"vi"<cr>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('o', 'in\'', ':<c-u>normal! f\'vi\'<cr>', { noremap = true, silent = true })
 
@@ -134,10 +146,10 @@ autocmd Filetype javascript iabbrev log console.log(
 
 -- Html autocmd
 vim.cmd([[
-autocmd Filetype html inoremap div <div class=""><cr><cr></div><esc>kA<tab>
-autocmd Filetype html inoremap html <html><cr><cr></html><esc>kA<tab>
-autocmd Filetype html inoremap body <body><cr><cr></body><esc>kA<tab>
-autocmd Filetype html inoremap wheader <!DOCTYPE html><cr><html><cr><head><cr><meta charset="UTF-8"><cr><meta name="viewport" content="width=device-width, initial-scale=1.0"><cr><title>Document</title><cr></head><cr><body><cr><cr></body><cr></html>
+autocmd Filetype html nnoremap <leader>d i<div class=""><cr><cr></div><esc>k
+autocmd Filetype html nnoremap <leader>p i<p><cr><cr></p><esc>k
+autocmd Filetype html nnoremap <leader>h i<!DOCTYPE html><cr><html><cr><head><cr><meta charset="UTF-8"><cr><meta name="viewport" content="width=device-width, initial-scale=1.0"><cr><title>Document</title><cr></head><cr><body><cr><cr></body><cr></html><esc>
+autocmd Filetype html nnoremap <leader>link i<link href="changeme" rel="changeme"><esc>
 ]])
 
 -- Set backspace to work normally
@@ -148,4 +160,11 @@ vim.g.tex_flavor = 'latex'
 vim.g.vimtex_view_method = 'general'
 vim.g.vimtex_view_general_viewer = 'C:\\Users\\theod\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64\\texworks.exe'
 vim.g.vimtex_quickfix_mode = 0
+
+-- Telescope bindings
+local builtin = require('telescope.builtin')
+vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
+vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
+vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
+vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
 
