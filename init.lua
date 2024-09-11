@@ -1,14 +1,14 @@
 -- Charger lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "\\lazy\\lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable", -- Dernière version stable
-    lazypath,
-  })
+    vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        "--branch=stable", -- Dernière version stable
+        lazypath,
+    })
 end
 
 vim.opt.rtp:prepend(lazypath)
@@ -40,10 +40,22 @@ require("lazy").setup({
         build = "npm install -g live-server",
     },
     {
-    'nvim-telescope/telescope.nvim', 
-    tag = '0.1.8',
-    dependencies = { 'nvim-lua/plenary.nvim' }
+        'nvim-telescope/telescope.nvim', 
+        tag = '0.1.8',
+        dependencies = { 'nvim-lua/plenary.nvim' }
     },
+    {
+        "NeogitOrg/neogit",
+        dependencies = {
+            "nvim-lua/plenary.nvim",         -- required
+            "sindrets/diffview.nvim",        -- optional - Diff integration
+
+            -- Only one of these is needed, not both.
+            "nvim-telescope/telescope.nvim", -- optional
+            "ibhagwan/fzf-lua",              -- optional
+        },
+        config = true
+    }
 })
 
 
@@ -61,6 +73,7 @@ vim.opt.expandtab = true
 vim.opt.smarttab = true
 vim.opt.wrap = false
 vim.opt.shiftround = true
+vim.opt.scrolloff = 6
 
 vim.cmd('syntax on')
 vim.cmd('filetype plugin indent on')
@@ -86,7 +99,7 @@ vim.api.nvim_set_keymap('n', '<cr>', 'o<esc>', { noremap = true, silent = true }
 
 vim.api.nvim_set_keymap('i', 'kj', '<esc>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('i', '<c-u>', '<Esc>viwUea', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('i', '<esc>', '<Nop>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>g', ':Neogit<cr>', { noremap = true, silent = true })
 
 -- Operator-pending mappings
 vim.api.nvim_set_keymap('o', 'in(', ':<c-u>normal! f(vi(<cr>', { noremap = true, silent = true })
