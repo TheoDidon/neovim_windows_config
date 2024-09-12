@@ -113,21 +113,30 @@ require("lazy").setup({
     },
     {
         'neovim/nvim-lspconfig',
-        config = function()
-            -- Configuration pour C/C++
-            require'lspconfig'.clangd.setup{}
-
-            -- Configuration pour CSS
-            require'lspconfig'.cssls.setup{}
-
-            -- Configuration pour HTML
-            require'lspconfig'.html.setup{}
-
-            -- Configuration pour JavaScript/TypeScript
-            require'lspconfig'.ts_ls.setup{}
-        end,
     },
 })
+
+-- Config LSP servers
+local lspconfig = require('lspconfig')
+
+lspconfig.cssls.setup{}     -- not working as expected
+lspconfig.html.setup{}      -- not working as expected
+lspconfig.ts_ls.setup{}     -- not working as expected
+
+lspconfig.clangd.setup{
+    cmd = { "clangd", "--compile-commands-dir=build" },
+    on_attach = function(client, bufnr)
+        local bufopts = { noremap=true, silent=true, buffer=bufnr }
+        vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+        vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
+        vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+        vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
+        vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, bufopts)
+    end,
+    flags = {
+        debounce_text_changes = 150,
+    },
+}
 
 
 -- Classic sets
