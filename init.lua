@@ -114,14 +114,52 @@ require("lazy").setup({
     {
         'neovim/nvim-lspconfig',
     },
+    {
+        'nvim-treesitter/nvim-treesitter',
+        run = ':TSUpdate', -- Mets à jour les parsers automatiquement
+        config = function()
+            require'nvim-treesitter.configs'.setup {
+                -- Installe les parsers pour ces langages
+                ensure_installed = { "c", "cpp", "lua", "javascript", "html", "css" },
+                
+                -- Met en surbrillance la syntaxe
+                highlight = {
+                    enable = true,              -- active la coloration syntaxique
+                    additional_vim_regex_highlighting = false,
+                },
+                
+                -- Activer d'autres modules si nécessaire
+                indent = {
+                    enable = true,              -- Activer l'indentation intelligente
+                },
+                
+                -- Activer l'autofermeture des balises, etc.
+                autotag = {
+                    enable = true,
+                },
+            }
+        end,
+    },
 })
 
 -- Config LSP servers
 local lspconfig = require('lspconfig')
 
-lspconfig.cssls.setup{}     -- not working as expected
-lspconfig.html.setup{}      -- not working as expected
-lspconfig.ts_ls.setup{}     -- not working as expected
+lspconfig.cssls.setup{
+    cmd = { "vscode-css-language-server", "--node-ipc" },
+    filetype = { "css", "scss", "less" },
+}   -- not working as expected
+
+lspconfig.html.setup{
+    cmd = { "vscode-html-language-server", "--node-ipc" },
+    filetypes = { "html" }
+}   -- not working as expected
+     
+lspconfig.ts_ls.setup{
+    cmd = { "typescript-language-server", "--node-ipc" },
+    filetypes = { "javascript", "typescript" }
+}   -- not working as expected   
+
 
 lspconfig.clangd.setup{
     cmd = { "clangd", "--compile-commands-dir=build" },
