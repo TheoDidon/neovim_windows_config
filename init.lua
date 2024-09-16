@@ -146,20 +146,19 @@ require("lazy").setup({
 local lspconfig = require('lspconfig')
 
 lspconfig.cssls.setup{
-    cmd = { "vscode-css-language-server", "--node-ipc" },
+    cmd = { "vscode-css-language-server", "--stdio" },
     filetype = { "css", "scss", "less" },
 }   -- not working as expected
 
 lspconfig.html.setup{
-    cmd = { "vscode-html-language-server", "--node-ipc" },
+    cmd = { "vscode-html-language-server", "--stdio" },
     filetypes = { "html" }
 }   -- not working as expected
      
 lspconfig.ts_ls.setup{
-    cmd = { "typescript-language-server", "--node-ipc" },
+    cmd = { "typescript-language-server", "--stdio" },
     filetypes = { "javascript", "typescript" }
 }   -- not working as expected   
-
 
 lspconfig.clangd.setup{
     cmd = { "clangd", "--compile-commands-dir=build" },
@@ -176,6 +175,33 @@ lspconfig.clangd.setup{
     },
 }
 
+-- LaTeX LSP Server (TexLab)
+lspconfig.texlab.setup{
+    cmd = { "texlab" },
+    filetypes = { "tex", "bib" },
+    settings = {
+        texlab = {
+            auxDirectory = ".",
+            bibtexFormatter = "texlab",
+            build = {
+                executable = "latexmk",
+                args = { "-pdf", "-interaction=nonstopmode", "-synctex=1", "%f" },
+                onSave = true,
+            },
+            forwardSearch = {
+                executable = "zathura", -- Change to your preferred PDF viewer
+                args = { "--synctex-forward", "%l:1:%f", "%p" },
+            },
+            chktex = {
+                onOpenAndSave = true,
+                onEdit = true,
+            },
+            diagnostics = {
+                delay = 300,
+            },
+        },
+    },
+}
 
 -- Classic sets
 vim.opt.number = true
@@ -218,6 +244,8 @@ vim.api.nvim_set_keymap('n', '<leader>gg', ':Neogit<cr>', { noremap = true, sile
 
 vim.api.nvim_set_keymap('i', 'kj', '<esc>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('i', '<c-u>', '<Esc>viwUea', { noremap = true, silent = true })
+
+vim.api.nvim_set_keymap('v', '<c-c>', '"+y', { noremap = true, silent = true })
 
 -- Operator-pending mappings
 vim.api.nvim_set_keymap('o', 'in(', ':<c-u>normal! f(vi(<cr>', { noremap = true, silent = true })
