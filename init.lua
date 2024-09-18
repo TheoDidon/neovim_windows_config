@@ -58,6 +58,25 @@ require("lazy").setup({
     },
     {
         'hrsh7th/nvim-cmp',
+        event = 'InsertEnter',
+            config = function()
+                local cmp = require'cmp'
+                cmp.setup({
+                    snippet = {
+                    expand = function(args)
+                        require('luasnip').lsp_expand(args.body) -- Pour les snippets (optionnel)
+                    end,
+                },
+                sources = cmp.config.sources({
+                    { name = 'nvim_lsp' }, -- Source LSP
+                }),
+                mapping = cmp.mapping.preset.insert({
+                    ['<C-n>'] = cmp.mapping.select_next_item(),
+                    ['<C-p>'] = cmp.mapping.select_prev_item(),
+                    ['<C-y>'] = cmp.mapping.confirm({ select = true }), -- Sélectionner avec Entrée
+                }),
+        })
+        end,
         dependencies = {
             'hrsh7th/cmp-nvim-lsp', -- Pour l'intégration avec LSP
             'hrsh7th/cmp-buffer', -- Complétion à partir des buffers ouverts
@@ -113,7 +132,22 @@ require("lazy").setup({
     },
     {
         'neovim/nvim-lspconfig',
+        event = 'BufReadPre',
     },
+    {
+        'williamboman/mason.nvim',
+        config = function()
+            require("mason").setup()
+        end,
+    },
+    {
+        'williamboman/mason-lspconfig.nvim',
+        config = function()
+            require("mason-lspconfig").setup {
+                ensure_installed = { "cssls", "html", "ts_ls" }, -- Assure que le serveur cssls est installé
+        }
+    end,
+  },
     {
         'nvim-treesitter/nvim-treesitter',
         run = ':TSUpdate', -- Mets à jour les parsers automatiquement
@@ -146,19 +180,26 @@ require("lazy").setup({
 local lspconfig = require('lspconfig')
 
 lspconfig.cssls.setup{
+    capabilities = require('cmp_nvim_lsp').default_capabilities(),
     cmd = { "vscode-css-language-server", "--stdio" },
     filetype = { "css", "scss", "less" },
-}   -- not working as expected
+}
 
 lspconfig.html.setup{
+    capabilities = require('cmp_nvim_lsp').default_capabilities(),
     cmd = { "vscode-html-language-server", "--stdio" },
     filetypes = { "html" }
-}   -- not working as expected
+}
      
 lspconfig.ts_ls.setup{
+    capabilities = require('cmp_nvim_lsp').default_capabilities(),
+    on_attach = function(client, bufnr)
+        client.server_capabilities.documentFormattingProvider = false
+        client.server_capabilities.documentRangeFormattingProvider = false
+    end,
     cmd = { "typescript-language-server", "--stdio" },
     filetypes = { "javascript", "typescript" }
-}   -- not working as expected   
+}
 
 lspconfig.clangd.setup{
     cmd = { "clangd", "--compile-commands-dir=build" },
