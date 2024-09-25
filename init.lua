@@ -6,7 +6,7 @@ if not vim.loop.fs_stat(lazypath) then
         "clone",
         "--filter=blob:none",
         "https://github.com/folke/lazy.nvim.git",
-        "--branch=stable", -- Dernière version stable
+        "--branch=stable", 
         lazypath,
     })
 end
@@ -47,12 +47,11 @@ require("lazy").setup({
     {
         "NeogitOrg/neogit",
         dependencies = {
-            "nvim-lua/plenary.nvim",         -- required
-            "sindrets/diffview.nvim",        -- optional - Diff integration
+            "nvim-lua/plenary.nvim",         
+            "sindrets/diffview.nvim",        
 
-            -- Only one of these is needed, not both.
-            "nvim-telescope/telescope.nvim", -- optional
-            "ibhagwan/fzf-lua",              -- optional
+            "nvim-telescope/telescope.nvim", 
+            "ibhagwan/fzf-lua",              
         },
         config = true
     },
@@ -64,27 +63,27 @@ require("lazy").setup({
                 cmp.setup({
                     snippet = {
                     expand = function(args)
-                        require('luasnip').lsp_expand(args.body) -- Pour les snippets (optionnel)
+                        require('luasnip').lsp_expand(args.body) 
                     end,
                 },
                 sources = cmp.config.sources({
-                    { name = 'nvim_lsp' }, -- Source LSP
+                    { name = 'nvim_lsp' }, 
                 }),
                 mapping = cmp.mapping.preset.insert({
                     ['<C-n>'] = cmp.mapping.select_next_item(),
                     ['<C-p>'] = cmp.mapping.select_prev_item(),
-                    ['<C-y>'] = cmp.mapping.confirm({ select = true }), -- Sélectionner avec Entrée
+                    ['<C-y>'] = cmp.mapping.confirm({ select = true }), 
                 }),
         })
         end,
         dependencies = {
-            'hrsh7th/cmp-nvim-lsp', -- Pour l'intégration avec LSP
-            'hrsh7th/cmp-buffer', -- Complétion à partir des buffers ouverts
-            'hrsh7th/cmp-path', -- Complétion des chemins de fichiers
-            'hrsh7th/cmp-cmdline', -- Complétion de la ligne de commande
-            'saadparwaiz1/cmp_luasnip', -- Intégration avec LuaSnip
-            'L3MON4D3/LuaSnip', -- Snippets
-            'rafamadriz/friendly-snippets' -- Snippets préconfigurés
+            'hrsh7th/cmp-nvim-lsp', 
+            'hrsh7th/cmp-buffer', 
+            'hrsh7th/cmp-path', 
+            'hrsh7th/cmp-cmdline', 
+            'saadparwaiz1/cmp_luasnip', 
+            'L3MON4D3/LuaSnip', 
+            'rafamadriz/friendly-snippets' 
         },
         config = function()
             local cmp = require('cmp')
@@ -112,7 +111,6 @@ require("lazy").setup({
                 })
             })
 
-            -- Configuration pour la ligne de commande
             cmp.setup.cmdline('/', {
                 mapping = cmp.mapping.preset.cmdline(),
                 sources = {
@@ -144,62 +142,94 @@ require("lazy").setup({
         'williamboman/mason-lspconfig.nvim',
         config = function()
             require("mason-lspconfig").setup {
-                ensure_installed = { "cssls", "html", "ts_ls" }, -- Assure que le serveur cssls est installé
+                ensure_installed = { "cssls", "html", "ts_ls", "tailwindcss" }, 
         }
     end,
   },
     {
         'nvim-treesitter/nvim-treesitter',
-        run = ':TSUpdate', -- Mets à jour les parsers automatiquement
+        run = ':TSUpdate', 
         config = function()
             require'nvim-treesitter.configs'.setup {
-                -- Installe les parsers pour ces langages
                 ensure_installed = { "c", "cpp", "lua", "javascript", "html", "css" },
                 
-                -- Met en surbrillance la syntaxe
                 highlight = {
-                    enable = true,              -- active la coloration syntaxique
+                    enable = true,              
                     additional_vim_regex_highlighting = false,
                 },
                 
-                -- Activer d'autres modules si nécessaire
                 indent = {
-                    enable = true,              -- Activer l'indentation intelligente
+                    enable = true,             
                 },
                 
-                -- Activer l'autofermeture des balises, etc.
                 autotag = {
                     enable = true,
                 },
             }
         end,
     },
+    {
+    'MunifTanjim/prettier.nvim',
+    config = function()
+      require('prettier').setup({
+        bin = 'prettierd', 
+        filetypes = {
+          "css",
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact",
+          "json",
+          "scss",
+          "less",
+        },
+      })
+    end,
+    ft = { "javascript", "javascriptreact", "typescript", "typescriptreact", "css", "json", "scss", "less" },
+    },
+    {
+        'luckasRanarison/tailwind-tools.nvim',
+        config = function()
+            require('tailwind-tools').setup()
+        end,
+        ft = { "html", "css", "javascript", "javascriptreact", "typescript", "typescriptreact" },
+    },
+
 })
 
 -- Config LSP servers
 local lspconfig = require('lspconfig')
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 lspconfig.cssls.setup{
-    capabilities = require('cmp_nvim_lsp').default_capabilities(),
+    capabilities = capabilities,
     cmd = { "vscode-css-language-server", "--stdio" },
     filetype = { "css", "scss", "less" },
 }
 
 lspconfig.html.setup{
-    capabilities = require('cmp_nvim_lsp').default_capabilities(),
+    capabilities = capabilities,
     cmd = { "vscode-html-language-server", "--stdio" },
     filetypes = { "html" }
 }
      
 lspconfig.ts_ls.setup{
-    capabilities = require('cmp_nvim_lsp').default_capabilities(),
+    capabilities = capabilities,
     on_attach = function(client, bufnr)
         client.server_capabilities.documentFormattingProvider = false
         client.server_capabilities.documentRangeFormattingProvider = false
     end,
     cmd = { "typescript-language-server", "--stdio" },
-    filetypes = { "javascript", "typescript" }
+    filetypes = { "javascript", "typescript", "jsx", "tsx", "javascriptreact", "typescriptreact" }
 }
+
+lspconfig.tailwindcss.setup{
+    capabilities = capabilities,
+    filetypes = { "html", "css", "javascript", "javascriptreact", "typescript", "typescriptreact" },
+    on_attach = function(client)
+        client.server_capabilities.documentFormattingProvider = false -- Désactiver le formatage si vous utilisez Prettier
+    end,
+}       -- not working as expected
 
 lspconfig.clangd.setup{
     cmd = { "clangd", "--compile-commands-dir=build" },
